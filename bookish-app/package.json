@@ -9,6 +9,7 @@
     "lint": "tsc -b && eslint .",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "e2e": "npx playwright test",
     "preview": "vite preview"
   },
   "dependencies": {
