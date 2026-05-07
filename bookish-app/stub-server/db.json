@@ -1,3 +1,16 @@
 {
-  "books": [{ "name": "Refactoring" }, { "name": "Domain-driven design" }]
+  "books": [
+    {
+      "name": "Refactoring",
+      "id": 1
+    },
+    {
+      "name": "Domain-driven design",
+      "id": 2
+    },
+    {
+      "name": "Microservices",
+      "id": 3
+    }
+  ]
 }
