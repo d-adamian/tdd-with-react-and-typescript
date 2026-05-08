@@ -38,8 +38,18 @@ test.describe("Bookish application", () => {
     await expect(page.getByTestId("book-list")).toBeAttached();
     const bookItems = await page.getByTestId("book-item").all();
     expect(bookItems).toHaveLength(3);
-    await expect(bookItems[0]).toHaveText("Refactoring");
-    await expect(bookItems[1]).toHaveText("Domain-driven design");
-    await expect(bookItems[2]).toHaveText("Microservices");
+    await expect(bookItems[0]).toContainText("Refactoring");
+    await expect(bookItems[1]).toContainText("Domain-driven design");
+    await expect(bookItems[2]).toContainText("Microservices");
+  });
+
+  test("Goes to the detail page", async ({ page }) => {
+    await page.goto(BASE_URL);
+    const bookItem = page.getByTestId("book-item").first();
+    await expect(bookItem).toContainText("View Details");
+    await bookItem.locator("a").click();
+    await page.waitForURL(`${BASE_URL}/books/1`);
+    const bookTitle = page.getByTestId("book-title");
+    await expect(bookTitle).toHaveText("Refactoring");
   });
 });

@@ -1,9 +1,8 @@
 import type { Book } from "./types";
 import { useEffect, useState } from "react";
+import { SERVER_URL } from "./server.ts";
 
 import axios from "axios";
-
-const SERVER_URL = "http://localhost:8079";
 
 export const useBooks = () => {
   const [books, setBooks] = useState<Book[]>([]);
