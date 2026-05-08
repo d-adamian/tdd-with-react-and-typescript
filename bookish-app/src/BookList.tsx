@@ -6,8 +6,8 @@ interface BookListProps {
 
 export const BookList = ({ books }: BookListProps) => (
   <div data-testid="book-list">
-    {books.map(({ name }) => (
-      <div className="book-item" data-testid="book-item" key={name}>
+    {books.map(({ id, name }) => (
+      <div className="book-item" data-testid="book-item" key={id}>
         <h2 className="title">{name}</h2>
       </div>
     ))}

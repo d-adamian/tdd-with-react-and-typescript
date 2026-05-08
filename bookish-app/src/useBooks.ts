@@ -16,14 +16,14 @@ export const useBooks = () => {
       setLoading(true);
       try {
         const response = await axios.get(`${SERVER_URL}/books`);
-        setBooks(response.data);
+        setBooks(response.data as Book[]);
       } catch {
         setError(true);
       } finally {
         setLoading(false);
       }
     };
-    fetchBooks();
+    void fetchBooks();
   }, []);
 
   return { books, loading, error };
