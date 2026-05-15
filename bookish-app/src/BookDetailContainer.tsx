@@ -1,4 +1,5 @@
 import { useBook } from "./useBook";
+import { BookDetail } from "./BookDetail";
 
 export const BookDetailContainer = () => {
   const { book, loading, error } = useBook();
@@ -8,11 +9,5 @@ export const BookDetailContainer = () => {
   if (error) {
     return <div>Error</div>;
   }
-  return (
-    <div className="book-detail">
-      <h2 className="book-title" data-testid="book-title">
-        {book && book.name}
-      </h2>
-    </div>
-  );
+  return book && <BookDetail book={book} />;
 };
