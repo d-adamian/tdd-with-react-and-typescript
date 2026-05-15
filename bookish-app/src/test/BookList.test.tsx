@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { describe, it, expect } from "vitest";
 import { BookList } from "../BookList/BookList.tsx";
 
@@ -13,9 +14,13 @@ const BOOKS = [
   },
 ];
 
+const renderWithRouter = (component: React.ReactElement) => {
+  return render(<MemoryRouter>{component}</MemoryRouter>);
+};
+
 describe("BookList", () => {
   it("should render books", async () => {
-    render(<BookList books={BOOKS} />);
+    renderWithRouter(<BookList books={BOOKS} />);
 
     const headings = await screen.findAllByRole("heading");
     expect(headings).toHaveLength(BOOKS.length);
