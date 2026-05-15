@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { BookDetail } from "../BookDetail";
+import { BookDetail } from "../BookDetail/BookDetail";
 import type { Book } from "../types";
 
 const BOOK: Book = {

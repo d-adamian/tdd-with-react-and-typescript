@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { describe, it, expect } from "vitest";
-import { BookList } from "../BookList.tsx";
+import { BookList } from "../BookList/BookList.tsx";
 
 const BOOKS = [
   {

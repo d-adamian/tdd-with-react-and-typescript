@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { type Book } from "./types.ts";
-import { SERVER_URL } from "./server.ts";
+import { type Book } from "../types.ts";
+import { SERVER_URL } from "../server.ts";
 
 import axios from "axios";
 

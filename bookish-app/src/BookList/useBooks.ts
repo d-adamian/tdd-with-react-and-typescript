@@ -1,6 +1,6 @@
-import type { Book } from "./types";
+import type { Book } from "../types";
 import { useEffect, useState } from "react";
-import { SERVER_URL } from "./server.ts";
+import { SERVER_URL } from "../server.ts";
 
 import axios from "axios";
 
