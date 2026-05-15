@@ -23,4 +23,11 @@ describe("BookDetail", () => {
     render(<BookDetail book={BOOK} />);
     expect(screen.getByText(BOOK.description || "")).toBeInTheDocument();
   });
+
+  it("should display book name when no description is provided", () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { description: _unused, ...book } = BOOK;
+    render(<BookDetail book={book} />);
+    expect(screen.getByTestId("book-description")).toHaveTextContent(book.name);
+  });
 });

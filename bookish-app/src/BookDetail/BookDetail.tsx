@@ -1,12 +1,18 @@
 import type { Book } from "../types";
 
+const getDescriptionFor = (book: Book) => {
+  return book.description ? book.description : book.name;
+};
+
 export const BookDetail = ({ book }: { book: Book }) => {
   return (
     <div className="detail">
       <h2 className="book-title" data-testid="book-title">
         {book.name}
       </h2>
-      <p className="book-description">{book.description}</p>
+      <p className="book-description" data-testid="book-description">
+        {getDescriptionFor(book)}
+      </p>
     </div>
   );
 };
