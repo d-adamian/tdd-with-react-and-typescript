@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
 import axios from "axios";
+import type { Page } from "@playwright/test";
 
 const BASE_URL = "http://localhost:5173";
 const STUB_SERVER_URL = "http://localhost:8079";
+
+const booksUrl = `${STUB_SERVER_URL}/books`;
 
 interface BookResponse {
   name: string;
@@ -15,56 +18,81 @@ const books: BookResponse[] = [
   { name: "Microservices", id: 3 },
 ];
 
-test.beforeEach(async () => {
-  const booksUrl = `${STUB_SERVER_URL}/books`;
+const cleanupStubBooks = async () => {
   const cleanupUrl = `${booksUrl}?_cleanup=true`;
   await axios.delete(cleanupUrl);
+};
 
+const feedStubBooks = async () => {
   for (const book of books) {
     await axios.post(booksUrl, book, {
       headers: { "Content-Type": "application/json" },
     });
   }
+};
+
+const gotoApp = async (page: Page) => {
+  await page.goto(BASE_URL);
+};
+
+const checkAppTitle = async (page: Page) => {
+  await expect(page.getByTestId("heading")).toHaveText("Bookish");
+};
+
+const checkBookList = async (page: Page, expectedBookNames: string[]) => {
+  await expect(page.getByTestId("book-list")).toBeAttached();
+  await expect(page.getByTestId("book-item")).toHaveCount(
+    expectedBookNames.length
+  );
+  const bookItems = await page.getByTestId("book-item").all();
+  for (let i = 0; i < bookItems.length; i++) {
+    await expect(bookItems[i]).toContainText(expectedBookNames[i]);
+  }
+};
+
+test.beforeEach(async () => {
+  await cleanupStubBooks();
+  await feedStubBooks();
 });
 
 test.describe("Bookish application", () => {
   test("Visits the bookish", async ({ page }) => {
-    await page.goto(BASE_URL);
-    await expect(page.getByTestId("heading")).toHaveText("Bookish");
+    await gotoApp(page);
+    await checkAppTitle(page);
   });
 
   test("Show the book list", async ({ page }) => {
-    await page.goto(BASE_URL);
-    await expect(page.getByTestId("book-list")).toBeAttached();
-    const bookItems = await page.getByTestId("book-item").all();
-    expect(bookItems).toHaveLength(3);
-    await expect(bookItems[0]).toContainText("Refactoring");
-    await expect(bookItems[1]).toContainText("Domain-driven design");
-    await expect(bookItems[2]).toContainText("Microservices");
+    await gotoApp(page);
+    const bookNames = books.map((book) => book.name);
+    await checkBookList(page, bookNames);
   });
 
-  test("Goes to the detail page", async ({ page }) => {
-    await page.goto(BASE_URL);
+  const gotoFirstBook = async (page: Page) => {
+    await gotoApp(page);
     const bookItem = page.getByTestId("book-item").first();
     await expect(bookItem).toContainText("View Details");
     await bookItem.locator("a").click();
-    await page.waitForURL(`${BASE_URL}/books/1`);
-    const bookTitle = page.getByTestId("book-title");
-    await expect(bookTitle).toHaveText("Refactoring");
+  };
+
+  const checkBookDetail = async (page: Page, book: BookResponse) => {
+    await page.waitForURL(`${BASE_URL}/books/${book.id}`);
+    await expect(page.getByTestId("book-title")).toHaveText(book.name);
+  };
+
+  test("Goes to the detail page", async ({ page }) => {
+    await gotoFirstBook(page);
+    await checkBookDetail(page, books[0]);
   });
 
   test("Searches for a title", async ({ page }) => {
-    await page.goto(BASE_URL);
-    await expect(page.getByTestId("book-list")).toBeAttached();
-    const bookItems = await page.getByTestId("book-item").all();
-    expect(bookItems).toHaveLength(3);
+    await gotoApp(page);
+
+    const bookNames = books.map((book) => book.name);
+    await checkBookList(page, bookNames);
 
     const searchInput = page.getByTestId("search");
     await searchInput.fill("design");
 
-    await expect(page.getByTestId("book-item")).toHaveCount(1);
-    await expect(page.getByTestId("book-item")).toContainText(
-      "Domain-driven design"
-    );
+    await checkBookList(page, ["Domain-driven design"]);
   });
 });
