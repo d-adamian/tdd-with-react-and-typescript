@@ -52,4 +52,19 @@ test.describe("Bookish application", () => {
     const bookTitle = page.getByTestId("book-title");
     await expect(bookTitle).toHaveText("Refactoring");
   });
+
+  test("Searches for a title", async ({ page }) => {
+    await page.goto(BASE_URL);
+    await expect(page.getByTestId("book-list")).toBeAttached();
+    const bookItems = await page.getByTestId("book-item").all();
+    expect(bookItems).toHaveLength(3);
+
+    const searchInput = page.getByTestId("search");
+    await searchInput.fill("design");
+
+    await expect(page.getByTestId("book-item")).toHaveCount(1);
+    await expect(page.getByTestId("book-item")).toContainText(
+      "Domain-driven design"
+    );
+  });
 });
