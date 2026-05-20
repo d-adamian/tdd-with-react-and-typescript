@@ -1,17 +1,23 @@
 import { BookList } from "./BookList";
 import { useBooks } from "./useBooks";
 import { SearchBox } from "./SearchBox";
+import { useDispatch, useSelector } from "react-redux";
+import { type RootState, type AppDispatch } from "../redux/store";
+import { fetchBooks } from "../redux/bookListSlice";
+import { useEffect } from "react";
 
 export const BookListContainer = () => {
-  const { loading, error, books, searchTerm, setSearchTerm } = useBooks();
+  const { searchTerm, setSearchTerm } = useBooks();
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { books } = useSelector((state: RootState) => ({
+    books: state.bookList.books,
+  }));
 
-  if (error) {
-    return <div>Error fetching books</div>;
-  }
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    void dispatch(fetchBooks(""));
+  }, [dispatch]);
 
   return (
     <>
