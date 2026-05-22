@@ -1,17 +1,19 @@
 import { TextField } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { type AppDispatch, type RootState } from "../redux/store";
+import { fetchBooks, setTerm } from "../redux/bookListSlice";
 
-interface SearchBoxProps {
-  term: string;
-  onSearch: (term: string) => void;
-}
+export const SearchBox = () => {
+  const term = useSelector((state: RootState) => state.bookList.term);
+  const dispatch = useDispatch<AppDispatch>();
 
-export const SearchBox = ({ term, onSearch }: SearchBoxProps) => {
   const performSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     if (value && value.trim().length === 0) {
       return;
     }
-    onSearch(value);
+    dispatch(setTerm(value));
+    void dispatch(fetchBooks(value));
   };
 
   return (

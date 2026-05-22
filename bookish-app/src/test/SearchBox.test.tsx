@@ -1,25 +1,32 @@
 import { render, screen } from "@testing-library/react";
-import { vitest, describe, it, expect } from "vitest";
+import { describe, it, expect } from "vitest";
 import userEvent from "@testing-library/user-event";
 import { SearchBox } from "../BookList/SearchBox";
+import { configureStore } from "@reduxjs/toolkit";
+import bookListReducer from "../redux/bookListSlice";
+import { Provider } from "react-redux";
 
 describe("SearchBox", () => {
-  const renderAndType = async (term: string) => {
-    const onSearch = vitest.fn();
-    render(<SearchBox term="" onSearch={onSearch} />);
+  it.each(["domain", "    "])(
+    "should render search input",
+    async (term: string) => {
+      const mockStore = configureStore({
+        reducer: {
+          bookList: bookListReducer,
+        },
+      });
 
-    const searchInput = screen.getByRole("textbox");
-    await userEvent.type(searchInput, term);
-    return onSearch;
-  };
+      render(
+        <Provider store={mockStore}>
+          <SearchBox />
+        </Provider>
+      );
 
-  it("should render search input", async () => {
-    const onSearch = await renderAndType("domain");
-    expect(onSearch).toHaveBeenCalled();
-  });
+      const searchInput = screen.getByRole("textbox");
+      await userEvent.type(searchInput, term);
 
-  it("should trim empty string", async () => {
-    const onSearch = await renderAndType("    ");
-    expect(onSearch).not.toHaveBeenCalled();
-  });
+      const state = mockStore.getState();
+      expect(state.bookList.term).toBe(term.trim());
+    }
+  );
 });

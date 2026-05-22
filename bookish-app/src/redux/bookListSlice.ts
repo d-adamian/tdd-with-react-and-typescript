@@ -1,6 +1,9 @@
 import type { Book } from "../types";
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { createAsyncThunk } from "@reduxjs/toolkit";
+import { SERVER_URL } from "../server.ts";
+
+import axios from "axios";
 
 type AppStateType = {
   books: Book[];
@@ -19,8 +22,8 @@ const initialState: AppStateType = {
 export const fetchBooks = createAsyncThunk<Book[], string>(
   "books/search",
   async (term: string = "") => {
-    const response = await fetch(`/api/books?q=${term}&_sort=id`);
-    return (await response.json()) as Book[];
+    const response = await axios.get(`${SERVER_URL}/books?q=${term}&_sort=id`);
+    return response.data as Book[];
   }
 );
 
