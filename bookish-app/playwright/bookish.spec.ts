@@ -23,6 +23,10 @@ const cleanupStubBooks = async () => {
   await axios.delete(cleanupUrl);
 };
 
+const cleanupReviews = async () => {
+  await axios.delete(`${booksUrl}/1/reviews`);
+};
+
 const feedStubBooks = async () => {
   for (const book of books) {
     await axios.post(booksUrl, book, {
@@ -50,9 +54,28 @@ const checkBookList = async (page: Page, expectedBookNames: string[]) => {
   }
 };
 
+const composeReview = async (page: Page, name: string, content: string) => {
+  const reviewInput = page.getByTestId("review-name");
+  await reviewInput.fill(name);
+
+  const reviewContentInput = page.getByTestId("review-content");
+  await reviewContentInput.fill(content);
+
+  const submitButton = page.getByTestId("review-submit");
+  await submitButton.click();
+};
+
+const checkReview = async (page: Page) => {
+  await expect(page.getByTestId("reviews-container")).toHaveCount(1);
+};
+
 test.beforeEach(async () => {
   await cleanupStubBooks();
   await feedStubBooks();
+});
+
+test.afterEach(async () => {
+  await cleanupReviews();
 });
 
 test.describe("Bookish application", () => {
@@ -94,5 +117,12 @@ test.describe("Bookish application", () => {
     await searchInput.fill("design");
 
     await checkBookList(page, ["Domain-driven design"]);
+  });
+
+  test("Write a review for a book", async ({ page }) => {
+    await gotoFirstBook(page);
+    await checkBookDetail(page, books[0]);
+    await composeReview(page, "Juntao Qiu", "Excellent work!");
+    await checkReview(page);
   });
 });
